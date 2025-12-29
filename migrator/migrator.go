@@ -37,6 +37,10 @@ func MigrateDB(connectionString, migrationsPath string) error {
 		return fmt.Errorf("error ping db: %w", err)
 	}
 
+	if err := createMigrationsSchema(db, InitMigrationsSchema); err != nil {
+		return fmt.Errorf("error creating migrations schema: %w", err)
+	}
+
 	// Create migrations versions table
 	if err := createMigrationsTable(db, InitMigrationVersionsTableQuery); err != nil {
 		return fmt.Errorf("error creating migrations table: %w", err)
@@ -82,6 +86,15 @@ func createMigrationsTable(db *sql.DB, query string) error {
 	log.Println("Init migrations table...")
 	if _, err := db.Exec(query); err != nil {
 		return fmt.Errorf("error init table: %w", err)
+	}
+
+	return nil
+}
+
+func createMigrationsSchema(db *sql.DB, query string) error {
+	log.Println("Init migrations schema...")
+	if _, err := db.Exec(query); err != nil {
+		return fmt.Errorf("error init schema: %w", err)
 	}
 
 	return nil
